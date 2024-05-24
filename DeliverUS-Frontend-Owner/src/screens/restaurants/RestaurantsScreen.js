@@ -16,6 +16,7 @@ import restaurantLogo from '../../../assets/restaurantLogo.jpeg'
 export default function RestaurantsScreen ({ navigation, route }) {
   const [restaurants, setRestaurants] = useState([])
   const [restaurantToBeDeleted, setRestaurantToBeDeleted] = useState(null)
+  const [status, setStatus] = useState('')
   const { loggedInUser } = useContext(AuthorizationContext)
 
   useEffect(() => {
@@ -35,11 +36,12 @@ export default function RestaurantsScreen ({ navigation, route }) {
           navigation.navigate('RestaurantDetailScreen', { id: item.id })
         }}
       >
-        <TextRegular numberOfLines={2}>{item.description}</TextRegular>
+        <TextRegular numberOfLines={3}>{item.description}</TextRegular>
         {item.averageServiceMinutes !== null &&
           <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
         }
         <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+        <TextSemiBold>Restaurant is: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.status}</TextSemiBold></TextSemiBold>
         <View style={styles.actionButtonsContainer}>
           <Pressable
             onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
@@ -74,6 +76,23 @@ export default function RestaurantsScreen ({ navigation, route }) {
             <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
             <TextRegular textStyle={styles.text}>
               Delete
+            </TextRegular>
+          </View>
+        </Pressable>
+        <Pressable
+          onPress={() => { setStatus(item.status === 'offline' ? 'online' : 'offline') }}
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed
+                ? GlobalStyles.brandGreenTap
+                : GlobalStyles.brandGreen
+            },
+            styles.actionButton
+          ]}>
+          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+            <MaterialCommunityIcons name='chart-line' color={'white'} size={20}/>
+            <TextRegular textStyle={styles.text}>
+              Change status
             </TextRegular>
           </View>
         </Pressable>
@@ -201,7 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     bottom: 5,
     position: 'absolute',
-    width: '90%'
+    width: '60%'
   },
   text: {
     fontSize: 16,

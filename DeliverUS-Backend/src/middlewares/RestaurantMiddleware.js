@@ -24,5 +24,18 @@ const restaurantHasNoOrders = async (req, res, next) => {
     return res.status(500).send(err.message)
   }
 }
+const restaurantHasNoNullDeliveredOrders = async (req, res, next) => {
+  try {
+    const numberOfRestaurantOrders = await Order.count({
+      where: { restaurantId: req.params.restaurantId, deliveredAt: null }
+    })
+    if (numberOfRestaurantOrders === 0) {
+      return next()
+    }
+    return res.status(409).send('Some orders are not delivered yet.')
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
 
-export { checkRestaurantOwnership, restaurantHasNoOrders }
+export { checkRestaurantOwnership, restaurantHasNoOrders, restaurantHasNoNullDeliveredOrders }
